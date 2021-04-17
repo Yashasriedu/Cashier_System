@@ -1,0 +1,63 @@
+﻿@model CashierSystem.Entities.UserAccountsVm
+<meta name="viewport" content="width=device-width" />
+<style type="text/css">
+    td:nth-child(2) {
+        padding-right: 20px;
+    }
+
+    th:nth-child(2) {
+        padding-right: 20px;
+    }
+    table {
+        border-collapse: separate;
+        border-spacing: 0 15px;
+    }
+
+    th {
+        /*background-color: #4287f5;*/
+        color: black;
+    }
+
+    th,
+    td {
+        width: 150px;
+        text-align: center;
+        border: 1px solid black;
+        padding: 5px;
+    }
+
+    h2 {
+        color: #4287f5;
+    }
+</style>
+<script type="text/javascript">
+    function RedirectToAddAccount(){
+    window.location.href = '@Url.Action("AddAccount", "Home")';
+    }
+    function RedirectToAccountDetails(accountId){
+     window.location.href= '@Url.Action("GetUserAccountDetails", "Home")?accountId='+accountId;
+    }
+</script>
+<h1><b>User Accounts</b></h1>
+<form>
+    <div>
+        <table >
+            <tr>
+                <th>AccountId</th>
+                <th>FirstName</th>
+                <th>LastName</th>
+                <th>Balance</th>
+            </tr>
+            @foreach (var userAccount in Model.UserAccounts)
+            {
+                <tr>
+                    <td><a onclick="RedirectToAccountDetails(@userAccount.AccountId)">@userAccount.AccountId </a></td>
+                    <td>@userAccount.FirstName</td>
+                    <td>@userAccount.LastName</td>
+                    <td>@userAccount.Balance$</td>
+                </tr>
+            }
+        </table>
+        <input type="button" value="Create Account" onclick="RedirectToAddAccount()" ; />
+    </div>
+</form>

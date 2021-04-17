@@ -1,0 +1,131 @@
+﻿@model CashierSystem.Entities.UserAccountDetails
+<style type="text/css">
+    table {
+        border-collapse: separate;
+        border-spacing: 0 15px;
+    }
+
+    th {
+        /*background-color: #4287f5;*/
+        color: black;
+    }
+
+    th,
+    td {
+        width: 150px;
+        text-align: center;
+        border: 1px solid black;
+        padding: 5px;
+    }
+
+    h2 {
+        color: #4287f5;
+    }
+</style>
+
+<script type="text/javascript">
+    var amount=0;
+    var isWithDraw=false;
+    function ShowAddAmountTextBox(){
+     isWithDraw=false;
+    $('#AddAmount').show();
+      $('#WithDrawAmount').hide();
+
+    }
+    function WithDrawAmountTransaction(){
+    var withdrawAmount=$('#txtWithDrawAmount').val();
+        if(withdrawAmount>@Model.AccountDetails.Balance)
+    {
+            alert("Insufficient Funds")
+    return;
+    }
+    amount=withdrawAmount;
+    CreateTransaction();
+    }
+    function AddAmountTransaction(){
+
+      var addAmoutn=$('#txtAddAmount').val();
+    amount=addAmoutn;
+     CreateTransaction();
+    return
+    }
+     function ShwoWithDrawAmounttextbox(){
+    isWithDraw=true;
+    $('#AddAmount').hide();
+      $('#WithDrawAmount').show();
+
+    }
+
+    function CreateTransaction(){
+    var accountId=@Model.AccountDetails.AccountId;
+
+
+
+        var url = "/Home/CreateTransaction";
+
+        $.post(url, { accountId: accountId, amount: amount,isWithDraw:isWithDraw }, function (data) {
+              window.location.href= '@Url.Action("GetUserAccountDetails", "Home")?accountId='+accountId;
+        });
+
+
+
+    }
+
+    function RedirectToUserAccounts(){
+    window.location.href= '@Url.Action("UserAccounts", "Home")';
+    }
+</script>
+
+<input type="button" value="Back" onclick="RedirectToUserAccounts()" />
+<h4 style="color:purple">
+    <b>Account Id:<span style="color:green;margin-left:20px">@Model.AccountDetails.AccountId</span></b></br>
+    <b>First Name:<span style="color:green;margin-left:20px">@Model.AccountDetails.FirstName</span></b></br>
+    <b>Last Name:<span style="color:green;margin-left:20px">@Model.AccountDetails.LastName</span></b></br>
+    <b>Balance:<span style="color:red;margin-left:20px">@Model.AccountDetails.Balance$</span></b>
+</h4>
+<input type="button" value="Add Amount" onclick="ShowAddAmountTextBox()" />
+<input type="button" value="WithDraw Amount" onclick="ShwoWithDrawAmounttextbox()" />
+
+
+
+<div id="AddAmount" style="display:none">
+    <br />
+    Add Amount    <input type="text" id="txtAddAmount" />$
+    <input type="button" value="Save" id="AddAmountTransaction" onclick="AddAmountTransaction()" />
+</div>
+<div id="WithDrawAmount" style="display:none">
+    <br />
+    WithDrawAmount   <input type="text" id="txtWithDrawAmount" />$
+    <input type="button" value="Save" id="WithDrawAmountTransaction" onclick="WithDrawAmountTransaction()" />
+</div>
+
+
+
+<h2>Transaction History</h2>
+
+<table>
+    <tr>
+        <th>TransactionId</th>
+        <th>Transaction Date</th>
+        <th>Debit/Credit</th>
+        <th>Balance</th>
+    </tr>
+    @foreach (var transaction in Model.ListOfTransactions)
+    {
+        <tr>
+            <td><a onclick="RedirectToAccountDetails(@transaction.AccountId)">@transaction.TransactionId </a></td>
+            <td>@transaction.TransactionDate</td>
+            @if (transaction.IsWithDraw)
+            {
+                <td style="color:red">-@transaction.Amount$</td>
+            }
+            else
+            {
+                <td style="color:green">@transaction.Amount$</td>
+            }
+            <td>@transaction.Balance$</td>
+        </tr>
+    }
+
+  
+</table>
